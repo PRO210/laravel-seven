@@ -245,10 +245,29 @@ return [
            // 'can'  =>  'profiles',
         ],
         [
+            'text' => 'Cargos',
+            'url'  => 'admin/roles',
+            'icon'  => 'fas fa-address-card',
+           // 'can'  =>  'roles',
+//
+        ],
+        [
             'text' => 'Permissões',
             'url'  => 'admin/permissions',
             'icon'  => 'fas fas fa-fw fa-lock',
-           // 'can'  =>  'profiles',
+           // 'can'  =>  'permissions',
+        ],
+        [
+            'text' => 'Usuários',
+            'url'  => 'admin/users',
+            'icon'  => 'fas fas fa-users',
+           // 'can'  =>  'users',
+        ],
+        [
+            'text' => 'Empresas',
+            'url'  => 'admin/tenants',
+            'icon'  => 'fas fa-building',
+           // 'can'  =>  'users',
         ],
         [
             'text'        => 'pages',

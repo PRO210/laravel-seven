@@ -26,9 +26,17 @@ Route::prefix('admin')
             Route::get('plans/{url}/details/create', 'DetailPlanController@create')->name('details.plan.create');
             Route::get('/plans/{url}/details/{idDetail}', 'DetailPlanController@show')->name('details.plan.show');
             //
-            // Router Profiles      // Router Profiles      // Router Profiles
+            //  Profiles      //  Profiles      //  Profiles
             Route::any('/profiles/search', 'ACL\ProfileController@search')->name('profiles.search');
             Route::resource('/profiles', 'ACL\ProfileController');
+            /**
+             * Plan x Profile   * Plan x Profile    * Plan x Profile
+             */
+            Route::get('plans/{id}/profile/{idProfile}/detach', 'ACL\PlanProfileController@detachProfilePlan')->name('plans.profile.detach');
+            Route::post('plans/{id}/profiles', 'ACL\PlanProfileController@attachProfilesPlan')->name('plans.profiles.attach');
+            Route::any('plans/{id}/profiles/create', 'ACL\PlanProfileController@profilesAvailable')->name('plans.profiles.available');
+            Route::get('plans/{id}/profiles', 'ACL\PlanProfileController@profiles')->name('plans.profiles');
+            Route::get('profiles/{id}/plans', 'ACL\PlanProfileController@plans')->name('profiles.plans');
             //
             // Router Permission      // Router Permissions      // Router Permission
             Route::any('/permissions/search', 'ACL\PermissionController@search')->name('permissions.search');
@@ -44,15 +52,38 @@ Route::prefix('admin')
             //
             //
             Route::get('/', 'PlanController@index')->name('admin.index');
+            //
+            // Router Users      // Router Users      // Router Users
+            Route::any('users/search', 'UserController@search')->name('users.search');
+            Route::resource('users', 'UserController');
+            //
+            //Routes Roles
+            //
+            Route::any('roles/search', 'ACL\RoleController@search')->name('roles.search');
+            Route::resource('roles', 'ACL\RoleController');
+            //
+            //Routes Tenants
+            //
+            Route::any('tenants/search', 'TenantController@search')->name('tenants.search');
+            Route::resource('tenants', 'TenantController');
+            //
+            // Role x User
+            Route::get('users/{id}/role/{idRole}/detach', 'ACL\RoleUserController@detachRoleUser')->name('users.role.detach');
+            Route::post('users/{id}/roles', 'ACL\RoleUserController@attachRolesUser')->name('users.roles.attach');
+            Route::any('users/{id}/roles/create', 'ACL\RoleUserController@rolesAvailable')->name('users.roles.available');
+            Route::get('users/{id}/roles', 'ACL\RoleUserController@roles')->name('users.roles');
+            Route::get('roles/{id}/users', 'ACL\RoleUserController@users')->name('roles.users');
+
+
         });
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
+/**
+ * Site
+ */
+Route::get('/plan/{url}', 'Site\SiteController@plan')->name('plan.subscription');
+Route::get('/', 'Site\SiteController@index')->name('site.home');
 //
-//Auth Routes
+//
+//Auth Routes       Auth Routes     Auth Routes
 Auth::routes();
 //
-
-//Route::get('/home', 'HomeController@index')->name('home');

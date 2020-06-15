@@ -16,6 +16,12 @@ class Profile extends Model
         return $this->belongsToMany(Permission::class);
     }
     //
+    //
+    public function plans()
+    {
+        return $this->belongsToMany(Plan::class);
+    }
+    //
     // Permissões não vínculadas ao perfil
     public function permissionsAvailable($filter = null)
     {
@@ -31,8 +37,8 @@ class Profile extends Model
         ->paginate();
 
         return $permissions ;
-        
+
     }
-    
-   
+
+
 }

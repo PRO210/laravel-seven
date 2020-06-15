@@ -1,21 +1,22 @@
 <?php
 
-namespace App\Http\Controllers\Admin\ACL;
+namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\StoreUpdateRole;
 use App\Http\Controllers\Controller;
-use App\Models\Role;
+use App\Http\Requests\StoreUpdateTenant;
+use App\Models\Tenant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
-class RoleController extends Controller
+class TenantController extends Controller
 {
-    protected $repository;
+    private $repository;
 
-    public function __construct(Role $role)
+    public function __construct(Tenant $tenant)
     {
-        $this->repository = $role;
+        $this->repository = $tenant;
 
-       // $this->middleware(['can:roles']);
+        // $this->middleware(['can:tenants']);
     }
 
     /**
@@ -25,9 +26,9 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = $this->repository->paginate();
+        $tenants = $this->repository->latest()->paginate();
 
-        return view('admin.pages.roles.index', compact('roles'));
+        return view('admin.pages.tenants.index', compact('tenants'));
     }
 
     /**
@@ -37,20 +38,20 @@ class RoleController extends Controller
      */
     public function create()
     {
-        return view('admin.pages.roles.create');
+        return view('admin.pages.tenants.create');
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreUpdateRole  $request
+     * @param  \App\Http\Requests\StoreUpdateTenant  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreUpdateRole $request)
+    public function store(StoreUpdateTenant $request)
     {
         $this->repository->create($request->all());
 
-        return redirect()->route('roles.index');
+        return redirect()->route('tenants.index');
     }
 
     /**
@@ -61,11 +62,11 @@ class RoleController extends Controller
      */
     public function show($id)
     {
-        if (!$role = $this->repository->find($id)) {
+        if (!$tenant = $this->repository->with('plan')->find($id)) {
             return redirect()->back();
         }
 
-        return view('admin.pages.roles.show', compact('role'));
+        return view('admin.pages.tenants.show', compact('tenant'));
     }
 
     /**
@@ -76,29 +77,42 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
-        if (!$role = $this->repository->find($id)) {
+        if (!$tenant = $this->repository->find($id)) {
             return redirect()->back();
         }
 
-        return view('admin.pages.roles.edit', compact('role'));
+        return view('admin.pages.tenants.edit', compact('tenant'));
     }
 
+
     /**
-     * Update the specified resource in storage.
+     * Update register by id
      *
-     * @param  \App\Http\Requests\StoreUpdateRole  $request
+     * @param  \App\Http\Requests\StoreUpdateTenant  $request
      * @param  int  $id
+     *
      * @return \Illuminate\Http\Response
      */
-    public function update(StoreUpdateRole $request, $id)
+    public function update(StoreUpdateTenant $request, $id)
     {
-        if (!$role = $this->repository->find($id)) {
+        if (!$tenant = $this->repository->find($id)) {
             return redirect()->back();
         }
 
-        $role->update($request->all());
+        $data = $request->all();
 
-        return redirect()->route('roles.index');
+        if ($request->hasFile('logo') && $request->logo->isValid()) {
+
+            if (Storage::exists($tenant->logo)) {
+                Storage::delete($tenant->logo);
+            }
+
+            $data['logo'] = $request->logo->store("tenants/{$tenant->uuid}");
+        }
+
+        $tenant->update($data);
+
+        return redirect()->route('tenants.index');
     }
 
     /**
@@ -109,14 +123,19 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        if (!$role = $this->repository->find($id)) {
+        if (!$tenant = $this->repository->find($id)) {
             return redirect()->back();
         }
 
-        $role->delete();
+        if (Storage::exists($tenant->logo)) {
+            Storage::delete($tenant->logo);
+        }
 
-        return redirect()->route('roles.index');
+        $tenant->delete();
+
+        return redirect()->route('tenants.index');
     }
+
 
     /**
      * Search results
@@ -128,15 +147,15 @@ class RoleController extends Controller
     {
         $filters = $request->only('filter');
 
-        $roles = $this->repository
+        $tenants = $this->repository
                             ->where(function($query) use ($request) {
                                 if ($request->filter) {
                                     $query->where('name', $request->filter);
-                                    $query->orWhere('description', 'LIKE', "%{$request->filter}%");
                                 }
                             })
+                            ->latest()
                             ->paginate();
 
-        return view('admin.pages.roles.index', compact('roles', 'filters'));
+        return view('admin.pages.tenants.index', compact('tenants', 'filters'));
     }
 }

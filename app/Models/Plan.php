@@ -17,15 +17,14 @@ class Plan extends Model {
     public function profiles() {
         return $this->belongsToMany(Profile::class);
     }
-
     //
     // //
-    //  public function tenants()
-    //  {
-    //      return $this->hasMany(Tenant::class);
-    //  }
+     public function tenants()
+     {
+         return $this->hasMany(Tenant::class);
+     }
     // //
-
+    //
     public function search($filter = null) {
         $results = $this->where('name', 'LIKE', "%{$filter}%")
                 ->orWhere('description', 'LIKE', "%{$filter}%")

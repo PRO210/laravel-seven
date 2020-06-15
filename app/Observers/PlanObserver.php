@@ -14,7 +14,7 @@ class PlanObserver {
      * @return void
      */
     public function creating(Plan $plan) {
-        
+
         $plan->url = Str::kebab($plan->name);
     }
 
@@ -26,8 +26,8 @@ class PlanObserver {
      */
     public function updating(Plan $plan)
     {
-            $plan->url = Str::kebab($plan->name);
-    
+        $plan->url = Str::kebab($plan->name);
+
     }
 
     /**
@@ -37,7 +37,7 @@ class PlanObserver {
      * @return void
      */
     public function deleted(Plan $plan) {
-        
+
     }
 
     /**
