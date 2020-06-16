@@ -50,6 +50,15 @@ Route::prefix('admin')
             Route::any('/profile/{idProfile}/permissions/create', 'ACL\PermissionProfileController@profilePermissionsAvailable')->name('profiles.permissions.available');
             Route::get('/profile/{idProfile}/permissions/', 'ACL\PermissionProfileController@permissions')->name('profiles.permissions');
             //
+            /**
+             * Permission x Role
+             */
+            Route::get('roles/{id}/permission/{idPermission}/detach', 'ACL\PermissionRoleController@detachPermissionRole')->name('roles.permission.detach');
+            Route::post('roles/{id}/permissions', 'ACL\PermissionRoleController@attachPermissionsRole')->name('roles.permissions.attach');
+            Route::any('roles/{id}/permissions/create', 'ACL\PermissionRoleController@permissionsAvailable')->name('roles.permissions.available');
+            Route::get('roles/{id}/permissions', 'ACL\PermissionRoleController@permissions')->name('roles.permissions');
+            Route::get('permissions/{id}/role', 'ACL\PermissionRoleController@roles')->name('permissions.roles');
+
             //
             Route::get('/', 'PlanController@index')->name('admin.index');
             //

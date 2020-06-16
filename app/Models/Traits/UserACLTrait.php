@@ -34,7 +34,7 @@ trait UserACLTrait
 
     }
     //
-    //
+    //Permissões do Plano
      public function permissionsPlan(): array
     {
         // $tenant = $this->tenant;
@@ -48,10 +48,10 @@ trait UserACLTrait
                 array_push($permissions, $permission->name);
             }
         }
-
         return $permissions;
     }
-
+    //
+    //Permissões do Cargo
     public function permissionsRole(): array
     {
         $roles = $this->roles()->with('permissions')->get();
@@ -66,16 +66,18 @@ trait UserACLTrait
         return $permissions;
     }
     //
-    //
+    //  Testa se o usuário permissão
     public function hasPermission(string $permissionName): bool
     {
         return in_array($permissionName, $this->permissions());
     }
     //
+    // Testa se o usuário é admin
     public function isAdmin(): bool
     {
         return in_array($this->email, config('acl.admins'));
     }
+    //
     //
     public function isTenant(): bool
     {
